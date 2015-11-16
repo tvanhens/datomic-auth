@@ -20,8 +20,7 @@
   (db/transact [(->User "test-user" "good-password")])
   (testing "username->uuid"
     (let [uuid (username->uuid (db/db) "test-user")]
-      (is (= (type uuid)
-             java.util.UUID))))
+      (is (= (type uuid) java.util.UUID))))
 
   (testing "login-valid?"
     (is (login-valid? (db/db) "test-user" "good-password"))
