@@ -5,11 +5,13 @@
             [buddy.auth.backends.token :as token]
             [buddy.auth.middleware :as middleware]))
 
+(defn now [] (java.util.Date.))
+
 (def secret (hash/sha256 "notasecret"))
 
 (defn hash-password [password] (hashers/encrypt password))
 
-(defn generate-token [uuid] (jwe/encode {:uuid uuid} secret))
+(defn generate-token [uuid] (jwe/encode {:uuid uuid :created (now)} secret))
 
 (defn check-password [attempt encrypted] (hashers/check attempt encrypted))
 

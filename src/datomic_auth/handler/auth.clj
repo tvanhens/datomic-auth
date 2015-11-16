@@ -11,13 +11,17 @@
 
 (defmethod impl/route-handler [:register :post]
   [request]
-  @(db/transact [(users/->User (username request)
-                               (password request))])
+  @(db/transact [(users/->User (username request) (password request))])
   (response "User Registered Successfully"))
 
 (defmethod impl/route-handler [:login :post]
   [request]
   (let [username (username request)]
-    (if (users/login-valid? username (password request))
-      (response {:token (auth/generate-token (users/username->uuid username))})
+    (if (users/login-valid? (db/db) username (password request))
+      (response {:token (auth/generate-token (users/username->uuid (db/db) username))})
       (response "Login Failed"))))
+
+(defmethod impl/route-handler [:change-password :post]
+  [request]
+  (if (users/login-valid? (db/db) (username request) (password request))
+    (response "")))
