@@ -30,3 +30,9 @@
                    [(datomic-auth.auth/check-password ?attempt ?encrypted) ?valid]]}
          username
          attempt))
+
+(defn user? [username]
+  (db/q* '{:find  [?username .]
+           :in    [$ ?username]
+           :where [[_ :user/username ?username]]}
+         username))

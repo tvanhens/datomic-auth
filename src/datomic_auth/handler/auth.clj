@@ -1,7 +1,7 @@
 (ns datomic-auth.handler.auth
   (:require [datomic-auth.auth :as auth]
             [datomic-auth.db :as db]
-            [datomic-auth.handler.impl :refer :all]
+            [datomic-auth.handler.impl :as impl]
             [datomic-auth.model.users :as users]
             [ring.util.response :refer :all]))
 
@@ -9,13 +9,13 @@
 
 (def password #(get-in % [:form-params :password]))
 
-(defmethod route-handler [:register :post]
+(defmethod impl/route-handler [:register :post]
   [request]
   @(db/transact [(users/->User (username request)
                                (password request))])
   (response "User Registered Successfully"))
 
-(defmethod route-handler [:login :post]
+(defmethod impl/route-handler [:login :post]
   [request]
   (let [username (username request)]
     (if (users/login-valid? username (password request))

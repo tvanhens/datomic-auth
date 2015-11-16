@@ -1,6 +1,7 @@
 (ns datomic-auth.handler
   (:require [bidi.bidi :as bidi]
             [datomic-auth.handler.impl :refer :all]
+            [datomic-auth.handler.auth]
             [datomic-auth.routes :refer [routes]]))
 
 (defn handler [{:keys [uri] :as request}]
