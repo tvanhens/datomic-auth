@@ -15,8 +15,6 @@
                conn))
   :stop  (d/delete-database uri))
 
-(def get-conn :conn)
-
 (defn- instance->tx-data [instance]
   (condp #(satisfies? % instance)
       protos/Createable (protos/create instance (d/tempid (protos/part instance)))))
@@ -27,8 +25,11 @@
 (defn- instances->tx-data [instances]
   (reduce concat-tx-data [] instances))
 
-(defn transact [request instances]
-  (d/transact (get-conn request) (instances->tx-data instances)))
+(defn q* [query & args]
+  (apply d/q query (d/db conn) args))
+
+(defn transact [instances]
+  (d/transact conn (instances->tx-data instances)))
 
 (defn wrap-conn [handler]
   (fn [request]

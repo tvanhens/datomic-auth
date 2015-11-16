@@ -1,7 +1,7 @@
 (ns datomic-auth.model.users
   (:require [datomic-auth.model.protocols :refer :all]
             [datomic-auth.model.utils :refer :all]
-            [buddy.hashers :as hashers]))
+            [datomic-auth.auth :as auth]))
 
 (defrecord User [username password]
   Createable
@@ -9,6 +9,6 @@
     [{:db/id         tempid
       :user/uuid     (uuid)
       :user/username username
-      :user/password (hashers/encrypt password)}])
+      :user/password (auth/hash-password password)}])
 
   (part [_] :users))

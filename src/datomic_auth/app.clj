@@ -1,5 +1,6 @@
 (ns datomic-auth.app
   (:require [bidi.bidi :as bidi]
+            [datomic-auth.auth :as auth]
             [datomic-auth.db :as db]
             [datomic-auth.model.users :refer [->User]]
             [ring.util.response :refer :all]
@@ -17,9 +18,15 @@
 
 (defmethod route-handler [:register :post]
   [request]
-  @(db/transact request [(->User (username request)
-                                 (password request))])
+  @(db/transact [(->User (username request)
+                         (password request))])
   (response "User Registered Successfully"))
+
+(defmethod route-handler [:login :post]
+  [request]
+  (if (auth/login-valid? (username request) (password request))
+    (response "Login Successful")
+    (response "Login Failed")))
 
 (defn handler [{:keys [uri] :as request}]
   (let [request* (merge request (bidi/match-route routes uri))]
@@ -39,7 +46,12 @@
 
   (app {:uri            "/register"
         :request-method :post
-        :form-params    {:username "tvanhens"
+        :form-params    {:username "tyler"
                          :password "1234"}})
+
+  (app {:uri            "/login"
+        :request-method :post
+        :form-params    {:username "tyler"
+                         :password "12"}})
 
   )
