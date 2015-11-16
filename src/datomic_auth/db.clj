@@ -1,13 +1,18 @@
 (ns datomic-auth.db
-  (:require [datomic.api :as d]
+  (:require [clojure.java.io :as io]
+            [datomic.api :as d]
             [datomic-auth.model.protocols :as protos]
             [mount :refer [defstate]]))
 
 (def uri "datomic:mem://datomic-auth")
 
+(def ^:private schema (-> "schema.edn" io/resource slurp read-string))
+
 (defstate conn
   :start (do (d/create-database uri)
-             (d/connect uri))
+             (let [conn (d/connect uri)]
+               @(d/transact conn schema)
+               conn))
   :stop  (d/delete-database uri))
 
 (def get-conn :conn)
