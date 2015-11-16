@@ -23,7 +23,6 @@
   (reduce concat-tx-data [] instances))
 
 (defn transact [request instances]
-  (println (instances->tx-data instances))
   (d/transact (get-conn request) (instances->tx-data instances)))
 
 (defn wrap-conn [handler]
