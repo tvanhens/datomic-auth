@@ -37,27 +37,3 @@
              auth/wrap-authentication
              (wrap-defaults api-defaults)
              db/wrap-conn))
-
-(comment
-
-  (mount/start)
-
-  (mount/stop)
-
-  (require '[datomic.api :as d])
-
-  (app {:uri            "/register"
-        :request-method :post
-        :form-params    {:username "tyler"
-                         :password "1234"}})
-
-  (app {:uri            "/login"
-        :request-method :post
-        :headers        {"Authorization" (str "Token " "eyJhbGciOiJkaXIiLCJ0eXAiOiJKV1MiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..BKzp5E55ON3ZyNWzmPFU7w.e36ufu47LsOv5Je24o4y7URClo8aLcvcPjs4kn-pcJjMUo_i05F0HYoOqzusl8Za.qxzp71rxTg4kjdLJU4LYLw")}
-        :form-params    {:username "tyler"
-                         :password "1234"}})
-
-  {:status 200, :headers {"Content-Type" "application/octet-stream"}, :body {:token "eyJhbGciOiJkaXIiLCJ0eXAiOiJKV1MiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..lhlKl12nQdpXhCPOvOI92w.BeGqIFCkW1BwxxC1yagxY6KTkRE-fRcGB_OtdW-yJN8.kyTrysNzOZDZnarLWeXLDQ"}}
-
-
-  )
