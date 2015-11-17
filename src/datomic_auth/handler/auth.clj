@@ -11,7 +11,7 @@
 
 (defmethod impl/route-handler [:register :post]
   [request]
-  @(db/transact [(users/->User (username request) (password request))])
+  @(db/transact [(users/create (username request) (password request))])
   (response "User Registered Successfully"))
 
 (defmethod impl/route-handler [:login :post]
@@ -23,5 +23,8 @@
 
 (defmethod impl/route-handler [:change-password :post]
   [request]
-  (if (users/login-valid? (db/db) (username request) (password request))
-    (response "")))
+  (let [username (users/request->username (db/db) request)]
+    (if (users/login-valid? (db/db) username (password request))
+      (do (db/transact [(users/change-password username password)])
+          (response "Password successfully changed."))
+      (response "Invalid Password"))))

@@ -12,16 +12,21 @@
 (use-fixtures :each reset-state)
 
 (deftest create-user-test
-  (db/transact [(->User "test-user" "test-password")])
-  (is (user? (db/db) "test-user"))
-  (is (not (user? (db/db) "not-a-user"))))
+  @(db/transact (create "test-user" "test-password"))
+  (is (username->uuid (db/db) "test-user"))
+  (is (not (username->uuid (db/db) "not-a-user"))))
 
 (deftest user-fns-tests
-  (db/transact [(->User "test-user" "good-password")])
+  @(db/transact (create "test-user" "good-password"))
   (testing "username->uuid"
     (let [uuid (username->uuid (db/db) "test-user")]
       (is (= (type uuid) java.util.UUID))))
 
   (testing "login-valid?"
     (is (login-valid? (db/db) "test-user" "good-password"))
-    (is (not (login-valid? (db/db) "test-user" "bad-password")))))
+    (is (not (login-valid? (db/db) "test-user" "bad-password"))))
+
+  (testing "change-password"
+    @(db/transact (change-password "test-user" "new-password"))
+    (is (login-valid? (db/db) "test-user" "new-password"))
+    (is (not (login-valid? (db/db) "test-user" "good-password")))))
