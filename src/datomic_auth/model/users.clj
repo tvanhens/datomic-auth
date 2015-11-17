@@ -15,7 +15,7 @@
     :user/password (auth/hash-password password)}])
 
 (defn username->uuid [db username]
-  (:user/uuid (d/entity db [:user/username username])))
+ (:user/uuid (d/entity db [:user/username username])))
 
 (defn request->username [db {:keys [identity] :as request}]
   (:user/username (d/entity db [:user/uuid (:uuid identity)])))
@@ -26,3 +26,6 @@
        (auth/check-password attempt)))
 
 (defn user-entity? [db e] (:user/username (d/entity db e)))
+
+(defn username-exists? [db username]
+  (:user/username (d/entity db [:user/username username])))
