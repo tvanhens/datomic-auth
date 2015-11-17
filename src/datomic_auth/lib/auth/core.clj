@@ -15,7 +15,7 @@
 (defn- new-confirm-mismatch-response []
   (-> {:msg "New password does not match confirmation."} response (status 400)))
 
-(defn register-user [db username password]
+(defn register [db username password]
   (if (users/username-exists? db username)
     (username-exists-response username)
     (let [{:keys [db-after]} @(db/transact (users/create username password))]

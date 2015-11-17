@@ -15,6 +15,23 @@
 
 (defn check-password [attempt encrypted] (hashers/check attempt encrypted))
 
-(def backend (token/jwe-backend {:secret secret}))
+(def ^:private backend (token/jwe-backend {:secret secret}))
 
-(defn wrap-authentication [handler] (middleware/wrap-authentication handler backend))
+(defn- parse-identity [identity]
+  (some-> identity
+          (update :uuid utils/parse-uuid)
+          (update :created utils/parse-date-int)))
+
+(defn wrap-parse-identity [handler]
+  (fn [{:keys [identity] :as request}]
+    (handler (update request :identity parse-identity))))
+
+(defn wrap-authentication-rules [handler]
+  (fn [{:keys [identity] :as request}]
+    (handler request)))
+
+(defn wrap-authentication [handler]
+  (-> handler
+      wrap-authentication-rules
+      wrap-parse-identity
+      (middleware/wrap-authentication backend)))

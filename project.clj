@@ -8,5 +8,6 @@
                  [buddy "0.8.0"]
                  [http-kit "2.1.19"]
                  [com.datomic/datomic-free "0.9.5327"]
+                 [clj-time "0.11.0"]
                  [mount "0.1.1"]
                  [ring/ring-defaults "0.1.5"]])
