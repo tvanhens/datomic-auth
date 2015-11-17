@@ -3,7 +3,8 @@
             [buddy.core.hash :as hash]
             [buddy.sign.jwe :as jwe]
             [buddy.auth.backends.token :as token]
-            [buddy.auth.middleware :as middleware]))
+            [buddy.auth.middleware :as middleware]
+            [datomic-auth.utils :as utils]))
 
 (defn now [] (java.util.Date.))
 
@@ -11,7 +12,11 @@
 
 (defn hash-password [password] (hashers/encrypt password))
 
-(defn generate-token [uuid] (jwe/encode {:uuid uuid :created (now)} secret))
+(defn generate-token [user-uuid session-uuid]
+  (jwe/encode {:user-uuid     user-uuid
+               :created       (now)
+               :session-uuid  session-uuid}
+              secret))
 
 (defn check-password [attempt encrypted] (hashers/check attempt encrypted))
 
@@ -19,7 +24,8 @@
 
 (defn- parse-identity [identity]
   (some-> identity
-          (update :uuid utils/parse-uuid)
+          (update :user-uuid utils/parse-uuid)
+          (update :session-uuid utils/parse-uuid)
           (update :created utils/parse-date-int)))
 
 (defn wrap-parse-identity [handler]

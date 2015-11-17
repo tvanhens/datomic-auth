@@ -1,21 +1,29 @@
 (ns datomic-auth.model.users
-  (:require [datomic-auth.model.utils :refer :all]
+  (:require [datomic-auth.model.utils :as utils]
             [datomic-auth.db :as db]
             [datomic-auth.auth :as auth]
             [datomic.api :as d]))
 
+(defrecord User [tempid username password]
+  db/IIdent
+  (ident [_] tempid)
+
+  db/ITxData
+  (tx-data [_]
+    [{:db/id         tempid
+      :user/uuid     (utils/uuid)
+      :user/username username
+      :user/password (auth/hash-password password)}]))
+
 (defn create [username password]
-  [{:db/id         (d/tempid :users)
-    :user/uuid     (uuid)
-    :user/username username
-    :user/password (auth/hash-password password)}])
+  (->User (d/tempid :users) username password))
 
 (defn change-password [username password]
   [{:db/id         [:user/username username]
     :user/password (auth/hash-password password)}])
 
 (defn username->uuid [db username]
- (:user/uuid (d/entity db [:user/username username])))
+  (:user/uuid (d/entity db [:user/username username])))
 
 (defn request->username [db {:keys [identity] :as request}]
   (:user/username (d/entity db [:user/uuid (:uuid identity)])))

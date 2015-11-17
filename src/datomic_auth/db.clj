@@ -3,6 +3,16 @@
             [datomic-auth.schema :refer [schema]]
             [mount :refer [defstate]]))
 
+(defprotocol IIdent
+  (ident [_]))
+
+(defprotocol ITxData
+  (tx-data [_]))
+
+(extend-protocol ITxData
+  clojure.lang.PersistentVector
+  (tx-data [this] this))
+
 (def uri "datomic:mem://datomic-auth")
 
 (defstate conn
@@ -14,7 +24,11 @@
 
 (defn db [] (d/db conn))
 
-(defn transact [tx-data] (d/transact conn tx-data))
+(defn concat-tx-data [acc coll] (concat acc (tx-data coll)))
+
+(defn transact [coll]
+  (let [tx-data (reduce concat-tx-data [] coll)]
+    (d/transact conn tx-data)))
 
 (defn wrap-conn [handler]
   (fn [request]

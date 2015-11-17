@@ -1,4 +1,7 @@
-[{:db/id                 #db/id[:db.part/db]
+[
+ ;; Users:
+
+ {:db/id                 #db/id[:db.part/db]
   :db/ident              :users
   :db.install/_partition :db.part/db}
 
@@ -21,6 +24,27 @@
  {:db/id                 #db/id[:db.part/db]
   :db/ident              :user/password
   :db/valueType          :db.type/string
+  :db/cardinality        :db.cardinality/one
+  :db/index              true
+  :db.install/_attribute :db.part/db}
+
+ ;; Sessions:
+
+ {:db/id                 #db/id[:db.part/db]
+  :db/ident              :sessions
+  :db.install/_partition :db.part/db}
+
+ {:db/id                 #db/id[:db.part/db]
+  :db/ident              :session/uuid
+  :db/valueType          :db.type/uuid
+  :db/cardinality        :db.cardinality/one
+  :db/index              true
+  :db/unique             :db.unique/identity
+  :db.install/_attribute :db.part/db}
+
+ {:db/id                 #db/id[:db.part/db]
+  :db/ident              :session/user
+  :db/valueType          :db.type/ref
   :db/cardinality        :db.cardinality/one
   :db/index              true
   :db.install/_attribute :db.part/db}]
