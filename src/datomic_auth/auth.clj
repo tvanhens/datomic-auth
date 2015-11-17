@@ -6,22 +6,17 @@
             [buddy.auth.middleware :as middleware]
             [datomic-auth.utils :as utils]))
 
-(defn now [] (java.util.Date.))
-
 (def secret (hash/sha256 "notasecret"))
 
 (defn hash-password [password] (hashers/encrypt password))
 
-(defn generate-token [uuid] (jwe/encode {:uuid uuid :created (now)} secret))
+(defn generate-token [uuid] (jwe/encode {:uuid uuid} secret))
 
 (defn check-password [attempt encrypted] (hashers/check attempt encrypted))
 
 (def ^:private backend (token/jwe-backend {:secret secret}))
 
-(defn- parse-identity [identity]
-  (some-> identity
-          (update :uuid utils/parse-uuid)
-          (update :created utils/parse-date-int)))
+(defn- parse-identity [identity] (some-> identity (update :uuid utils/parse-uuid)))
 
 (defn wrap-parse-identity [handler]
   (fn [{:keys [identity] :as request}]
