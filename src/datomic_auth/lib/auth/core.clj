@@ -17,6 +17,9 @@
 (defn- new-confirm-mismatch-response []
   (-> {:msg "New password does not match confirmation."} response (status 400)))
 
+(defn- generate-token [db username]
+  (->> username (users/username->uuid db) auth/generate-token))
+
 (defn register [db username password]
   (if (users/username-exists? db username)
     (username-exists-response username)
@@ -28,7 +31,7 @@
 
 (defn login [db username password]
   (if (users/login-valid? db username password)
-    (let [token (->> username (users/username->uuid db) auth/generate-token)]
+    (let [token (generate-token db username)]
       @(db/transact [(sessions/create token (users/map->User {:username username}))])
       (token-response token))
     (invalid-username-password-response)))
@@ -36,7 +39,10 @@
 (defn change-password [db username old-password new-password confirm]
   (if (users/login-valid? db username old-password)
     (if (= new-password confirm)
-      (let [{:keys [db-after]} @(db/transact (users/change-password username new-password))]
-        (token-response (users/username->uuid db username)))
+      (let [token (generate-token db username)
+            {:keys [db-after]}
+            @(db/transact [(users/change-password username new-password)
+                           (sessions/create token (users/map->User {:username username}))])]
+        (token-response token))
       (new-confirm-mismatch-response))
     (invalid-username-password-response)))
