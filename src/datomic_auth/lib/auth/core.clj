@@ -26,13 +26,14 @@
     (let [uuid               (utils/uuid)
           user               (users/create username password uuid)
           token              (auth/generate-token uuid)
-          {:keys [db-after]} @(db/transact  [user (sessions/create token user)])]
+          {:keys [db-after]} @(db/transact [user (sessions/create token user :registered)])]
       (token-response token))))
 
 (defn login [db username password]
   (if (users/login-valid? db username password)
     (let [token (generate-token db username)]
-      @(db/transact [(sessions/create token (users/map->User {:username username}))])
+      @(db/transact [(sessions/create
+                      token (users/map->User {:username username} :loggedIn))])
       (token-response token))
     (invalid-username-password-response)))
 
@@ -42,7 +43,8 @@
       (let [token (generate-token db username)
             {:keys [db-after]}
             @(db/transact [(users/change-password username new-password)
-                           (sessions/create token (users/map->User {:username username}))])]
+                           (sessions/create
+                            token (users/map->User {:username username}) :passwordChanged)])]
         (token-response token))
       (new-confirm-mismatch-response))
     (invalid-username-password-response)))

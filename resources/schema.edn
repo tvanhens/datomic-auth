@@ -47,4 +47,20 @@
   :db/valueType          :db.type/ref
   :db/cardinality        :db.cardinality/one
   :db/index              true
-  :db.install/_attribute :db.part/db}]
+  :db.install/_attribute :db.part/db}
+
+ {:db/id                 #db/id[:db.part/db]
+  :db/ident              :session/type
+  :db/valueType          :db.type/ref
+  :db/cardinality        :db.cardinality/one
+  :db/index              true
+  :db.install/_attribute :db.part/db}
+
+ {:db/id                 #db/id[:db.part/db]
+  :db/ident              :session.type/registered}
+
+ {:db/id                 #db/id[:db.part/db]
+  :db/ident              :session.type/loggedIn}
+
+ {:db/id                 #db/id[:db.part/db]
+  :db/ident              :session.type/passwordChanged}]
