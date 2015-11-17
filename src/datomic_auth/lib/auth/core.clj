@@ -6,8 +6,7 @@
             [datomic-auth.utils :as utils]
             [ring.util.response :refer :all]))
 
-(defn- token-response [user-uuid session-uuid]
-  (response {:token (auth/generate-token user-uuid session-uuid)}))
+(defn- token-response [token] (response {:token token}))
 
 (defn- username-exists-response [username]
   (-> {:msg (format "Username [%s] already exists." username)} response (status 400)))
@@ -21,14 +20,17 @@
 (defn register [db username password]
   (if (users/username-exists? db username)
     (username-exists-response username)
-    (let [session-uuid       (utils/uuid)
-          user               (users/create username password)
-          {:keys [db-after]} @(db/transact  [user (sessions/create session-uuid user)])]
-      (token-response (users/username->uuid db-after username) session-uuid))))
+    (let [uuid               (utils/uuid)
+          user               (users/create username password uuid)
+          token              (auth/generate-token uuid)
+          {:keys [db-after]} @(db/transact  [user (sessions/create token user)])]
+      (token-response token))))
 
 (defn login [db username password]
   (if (users/login-valid? db username password)
-    (token-response (users/username->uuid db username))
+    (let [token (->> username (users/username->uuid db) auth/generate-token)]
+      @(db/transact [(sessions/create token (users/map->User {:username username}))])
+      (token-response token))
     (invalid-username-password-response)))
 
 (defn change-password [db username old-password new-password confirm]

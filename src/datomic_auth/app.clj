@@ -7,5 +7,5 @@
 
 (def app (-> handler
              auth/wrap-authentication
-             (wrap-defaults api-defaults)
+             #_(wrap-defaults api-defaults)
              db/wrap-conn))

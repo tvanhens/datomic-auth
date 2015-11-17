@@ -4,19 +4,22 @@
             [datomic-auth.auth :as auth]
             [datomic.api :as d]))
 
-(defrecord User [tempid username password]
+(defrecord User [tempid username password uuid]
   db/IIdent
-  (ident [_] tempid)
+  (ident [_]
+    (cond
+      tempid   tempid
+      username [:user/username username]))
 
   db/ITxData
   (tx-data [_]
     [{:db/id         tempid
-      :user/uuid     (utils/uuid)
+      :user/uuid     uuid
       :user/username username
       :user/password (auth/hash-password password)}]))
 
-(defn create [username password]
-  (->User (d/tempid :users) username password))
+(defn create [username password uuid]
+  (->User (d/tempid :users) username password uuid))
 
 (defn change-password [username password]
   [{:db/id         [:user/username username]

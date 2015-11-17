@@ -2,7 +2,7 @@
   (:require [datomic.api :as d]
             [datomic-auth.db :as db]))
 
-(defn create [uuid user]
+(defn create [token user]
   [{:db/id         (d/tempid :sessions)
-    :session/uuid  uuid
+    :session/token token
     :session/user  (db/ident user)}])

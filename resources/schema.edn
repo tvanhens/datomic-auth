@@ -35,8 +35,8 @@
   :db.install/_partition :db.part/db}
 
  {:db/id                 #db/id[:db.part/db]
-  :db/ident              :session/uuid
-  :db/valueType          :db.type/uuid
+  :db/ident              :session/token
+  :db/valueType          :db.type/string
   :db/cardinality        :db.cardinality/one
   :db/index              true
   :db/unique             :db.unique/identity

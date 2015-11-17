@@ -12,11 +12,7 @@
 
 (defn hash-password [password] (hashers/encrypt password))
 
-(defn generate-token [user-uuid session-uuid]
-  (jwe/encode {:user-uuid     user-uuid
-               :created       (now)
-               :session-uuid  session-uuid}
-              secret))
+(defn generate-token [uuid] (jwe/encode {:uuid uuid :created (now)} secret))
 
 (defn check-password [attempt encrypted] (hashers/check attempt encrypted))
 
@@ -24,8 +20,7 @@
 
 (defn- parse-identity [identity]
   (some-> identity
-          (update :user-uuid utils/parse-uuid)
-          (update :session-uuid utils/parse-uuid)
+          (update :uuid utils/parse-uuid)
           (update :created utils/parse-date-int)))
 
 (defn wrap-parse-identity [handler]
