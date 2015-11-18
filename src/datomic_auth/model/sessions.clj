@@ -14,11 +14,11 @@
 
 (def by-event
   '[(by-event ?event ?tokens)
-    [(name ?event) ?event-name]
-    [(keyword "session.event" ?event-name) ?event-ident]
+    [(datomic-auth.model.sessions/event-ident ?event) ?event-ident]
     [?tokens :session/event ?event-ident]])
 
-(defn- event-ident [kw]
+(defn event-ident [kw]
+  {:pre [#{:passwordChanged :registered :loggedIn}]}
   (->> kw name (keyword "session.event")))
 
 (defn create [token user event]
