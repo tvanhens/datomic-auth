@@ -28,9 +28,6 @@
 (defn username->uuid [db username]
   (:user/uuid (d/entity db [:user/username username])))
 
-(defn request->username [db {:keys [identity] :as request}]
-  (:user/username (d/entity db [:user/uuid (:uuid identity)])))
-
 (defn login-valid? [db username attempt]
   (->> (d/entity db [:user/username username])
        :user/password
