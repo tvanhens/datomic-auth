@@ -1,7 +1,7 @@
 (ns datomic-auth.model.users-test
   (:require [clojure.test :refer :all]
             [datomic-auth.model.users :refer :all]
-            [datomic-auth.model.utils :as utils]
+            [datomic-auth.utils :as utils]
             [datomic-auth.db :as db]
             [mount]))
 

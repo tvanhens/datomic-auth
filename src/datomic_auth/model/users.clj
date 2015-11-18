@@ -1,5 +1,5 @@
 (ns datomic-auth.model.users
-  (:require [datomic-auth.model.utils :as utils]
+  (:require [datomic-auth.utils :as utils]
             [datomic-auth.db :as db]
             [datomic-auth.auth :as auth]
             [datomic.api :as d]))
