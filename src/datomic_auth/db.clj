@@ -13,6 +13,10 @@
   clojure.lang.PersistentVector
   (tx-data [this] this))
 
+(extend-protocol IIdent
+  clojure.lang.PersistentVector
+  (ident [this] this))
+
 (def uri "datomic:mem://datomic-auth")
 
 (defstate conn

@@ -3,14 +3,9 @@
             [datomic-auth.model.users :refer :all]
             [datomic-auth.utils :as utils]
             [datomic-auth.db :as db]
-            [mount]))
+            [datomic-auth.model.test-utils :as test-utils]))
 
-(defn reset-state [f]
-  (mount/start)
-  (f)
-  (mount/stop))
-
-(use-fixtures :each reset-state)
+(use-fixtures :each test-utils/reset-state)
 
 (deftest create-user-test
   @(db/transact [(create "test-user" "test-password" (utils/uuid))])
