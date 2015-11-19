@@ -10,4 +10,6 @@
                  [com.datomic/datomic-free "0.9.5327"]
                  [clj-time "0.11.0"]
                  [mount "0.1.1"]
-                 [ring/ring-defaults "0.1.5"]])
+                 [ring/ring-defaults "0.1.5"]
+                 [org.clojure/tools.namespace "0.2.11"]]
+  :profiles {:dev {:source-paths #{"dev" "src"}}})
