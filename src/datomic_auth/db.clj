@@ -30,7 +30,7 @@
 
 (defn concat-tx-data [acc coll] (concat acc (tx-data coll)))
 
-(defn transact [coll]
+(defn transact [conn coll]
   (let [tx-data (reduce concat-tx-data [] coll)]
     (d/transact conn tx-data)))
 

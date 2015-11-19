@@ -11,5 +11,6 @@
                  [clj-time "0.11.0"]
                  [mount "0.1.1"]
                  [ring/ring-defaults "0.1.5"]
-                 [org.clojure/tools.namespace "0.2.11"]]
+                 [org.clojure/tools.namespace "0.2.11"]
+                 [org.clojars.czan/stateful-check "0.3.1"]]
   :profiles {:dev {:source-paths #{"dev" "src"}}})
