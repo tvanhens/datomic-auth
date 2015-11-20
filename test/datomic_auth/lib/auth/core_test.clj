@@ -24,12 +24,19 @@
 
 (def gen-valid-username gen/string-alphanumeric)
 
-(defn random-username-password-args [state] [(:conn state) gen-valid-username gen/string])
+(defn random-username-password-args [state]
+  [(:conn state) gen-valid-username gen/string])
+
+(defn gen-user-username [user]
+  (gen/bind user #(-> % second :password gen/return)))
+
+(defn gen-user-password [user]
+  (gen/bind user (comp gen/return first)))
 
 (defn existing-username-password-args [state]
   (let [users (:users/by-username state)
         user  (gen/elements users)]
-    [(:conn state) (gen/bind user (comp gen/return first)) (gen/bind user #(-> % second :password gen/return))]))
+    [(:conn state) (gen-user-password user) (gen-user-username user)]))
 
 (defn users-present? [state] (:users/by-username state))
 
