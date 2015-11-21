@@ -6,7 +6,7 @@
             [buddy.auth.middleware :as middleware]
             [buddy.auth.accessrules :as accessrules]
             [datomic-auth.utils :as utils]
-            [datomic-auth.accessrules :refer [rules]]))
+            [datomic-auth.accessrules :refer [rules unauthorized-handler]]))
 
 (def secret (hash/sha256 "notasecret"))
 
@@ -20,13 +20,22 @@
 
 (defn- parse-identity [identity] (some-> identity (update :uuid utils/parse-uuid)))
 
-(defn wrap-parse-identity [handler]
+(defn- wrap-parse-identity [handler]
   (fn [{:keys [identity] :as request}]
     (handler (update request :identity parse-identity))))
 
 (defn wrap-authentication [handler]
   (-> handler
       wrap-parse-identity
-      (accessrules/wrap-access-rules {:rules   rules
-                                      :default :reject})
+      (accessrules/wrap-access-rules {:rules    rules
+                                      :policy   :reject
+                                      :on-error unauthorized-handler})
       (middleware/wrap-authentication backend)))
+
+(comment
+
+  ((wrap-authentication identity)
+   {:uri "/hello"
+    :request-method :get})
+
+  )
